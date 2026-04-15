@@ -1,0 +1,106 @@
+{
+  "name": "workforest",
+  "displayName": "Workforest",
+  "description": "View and manage Claude Code git worktrees",
+  "version": "0.0.1",
+  "publisher": "0xdeafcafe",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/.claude/worktrees"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "workforest",
+          "title": "Workforest",
+          "icon": "resources/workforest.svg"
+        }
+      ]
+    },
+    "views": {
+      "workforest": [
+        {
+          "id": "workforest.worktrees",
+          "name": "Worktrees"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "workforest.refresh",
+        "title": "Refresh Worktrees",
+        "icon": "$(refresh)",
+        "category": "Workforest"
+      },
+      {
+        "command": "workforest.openInNewWindow",
+        "title": "Open in New Window",
+        "icon": "$(multiple-windows)",
+        "category": "Workforest"
+      },
+      {
+        "command": "workforest.openInTerminal",
+        "title": "Open in Terminal",
+        "icon": "$(terminal)",
+        "category": "Workforest"
+      },
+      {
+        "command": "workforest.openDiff",
+        "title": "Open Diff",
+        "icon": "$(diff)",
+        "category": "Workforest"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "workforest.refresh",
+          "when": "view == workforest.worktrees",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "workforest.openInNewWindow",
+          "when": "viewItem == worktree",
+          "group": "inline"
+        },
+        {
+          "command": "workforest.openInTerminal",
+          "when": "viewItem == worktree",
+          "group": "inline"
+        },
+        {
+          "command": "workforest.openDiff",
+          "when": "viewItem == changedFile",
+          "group": "inline"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "workforest.worktrees",
+        "contents": "No Claude Code worktrees found.\n\nWorktrees appear here when Claude Code creates them in .claude/worktrees/ directories within your workspace folders."
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "build": "node esbuild.js --production",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.5.0"
+  }
+}
