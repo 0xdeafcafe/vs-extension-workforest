@@ -2,7 +2,7 @@
 
 claude code loves making worktrees. it spins up a new one every time it wants to try something, dumps it in `.claude/worktrees/`, and never tells you about it. you end up with a forest of half-finished branches buried in your project directory that you can only find by running `git worktree list` like some kind of cave person.
 
-this fixes that. it adds a sidebar panel to VS Code that shows all your active claude code worktrees across every project in your workspace. branch names, changed files, commit history — all right there. it also auto-manages your `.code-workspace` file so new worktrees show up as workspace folders and dead ones get cleaned out.
+this fixes that. it adds a sidebar panel to VS Code that shows all your active claude code worktrees across every project in your workspace. branch names, changed files, commit history — all right there. it also auto-manages your `.code-workspace` file so new worktrees show up as workspace folders (prefixed with 🌴 so you can spot them) and dead ones get cleaned out. worktrees with no commits in the last 5 days are considered stale and hidden automatically.
 
 designed in my head, built in claude. loved by people who have too many worktrees and know it.
 
@@ -45,13 +45,13 @@ worktree details (changed files, commits) load lazily when you expand a node. th
 
 ## workspace sync
 
-if you use VS Code's multi-root workspaces (`.code-workspace` files), workforest keeps them in sync with your worktrees. new worktrees get added under a `🌳 <project> worktrees` divider section. deleted ones get removed. empty sections get cleaned up. you don't have to touch your workspace file.
+if you use VS Code's multi-root workspaces (`.code-workspace` files), workforest keeps them in sync with your worktrees. new worktrees get added under a `🌳 <project> worktrees` divider section, each prefixed with 🌴 so they're visually distinct from your real project folders. stale worktrees (nothing committed in 5 days) and deleted ones get removed automatically. empty sections get cleaned up too. you don't have to touch your workspace file.
 
 ```json
 { "name": "langwatch", "path": "langwatch-saas/langwatch" },
 { "name": "🌳 langwatch worktrees", "path": "langwatch-saas/langwatch" },
-{ "name": "feat+ops-functions", "path": "langwatch-saas/langwatch/.claude/worktrees/feat+ops-functions" },
-{ "name": "observe-package", "path": "langwatch-saas/langwatch/.claude/worktrees/observe-package" },
+{ "name": "🌴 feat+ops-functions", "path": "langwatch-saas/langwatch/.claude/worktrees/feat+ops-functions" },
+{ "name": "🌴 observe-package", "path": "langwatch-saas/langwatch/.claude/worktrees/observe-package" },
 ```
 
 ## how it finds worktrees
