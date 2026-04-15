@@ -4,6 +4,10 @@
   "description": "View and manage Claude Code git worktrees",
   "version": "0.0.1",
   "publisher": "0xdeafcafe",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xdeafcafe/vs-extension-workforest.git"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
