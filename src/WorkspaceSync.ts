@@ -4,6 +4,7 @@ import * as fs from "fs";
 import type { WorktreeTreeProvider } from "./WorktreeTreeProvider";
 
 const DIVIDER_PREFIX = "\u{1F333} "; // 🌳
+const WORKTREE_PREFIX = "\u{1F334} "; // 🌴
 
 export class WorkspaceSync implements vscode.Disposable {
   private disposables: vscode.Disposable[] = [];
@@ -38,7 +39,10 @@ export class WorkspaceSync implements vscode.Disposable {
         const folder = folders[i];
         const fsPath = folder.uri.fsPath;
 
-        if (fsPath.includes(`${path.sep}.claude${path.sep}worktrees${path.sep}`)) {
+        if (
+          fsPath.includes(`${path.sep}.claude${path.sep}worktrees${path.sep}`) ||
+          folder.name.startsWith(WORKTREE_PREFIX)
+        ) {
           existingWorktreeIndices.push(i);
           existingWorktreePaths.add(fsPath);
         } else if (folder.name.startsWith(DIVIDER_PREFIX) && folder.name.endsWith(" worktrees")) {
@@ -131,7 +135,7 @@ export class WorkspaceSync implements vscode.Disposable {
         // Insert new worktrees at the end of the section
         const foldersToAdd = newWorktrees.map((wt) => ({
           uri: vscode.Uri.file(wt.path),
-          name: path.basename(wt.path),
+          name: `${WORKTREE_PREFIX}${path.basename(wt.path)}`,
         }));
 
         vscode.workspace.updateWorkspaceFolders(
@@ -162,9 +166,10 @@ export class WorkspaceSync implements vscode.Disposable {
       const nextIdx = i + 1;
       const hasWorktrees =
         nextIdx < folders.length &&
-        folders[nextIdx].uri.fsPath.includes(
-          `${path.sep}.claude${path.sep}worktrees${path.sep}`
-        );
+        (folders[nextIdx].name.startsWith(WORKTREE_PREFIX) ||
+          folders[nextIdx].uri.fsPath.includes(
+            `${path.sep}.claude${path.sep}worktrees${path.sep}`
+          ));
 
       if (!hasWorktrees) {
         toRemove.push(i);

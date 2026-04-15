@@ -137,6 +137,19 @@ export async function getCommitsAhead(
   }
 }
 
+export async function getLastCommitEpoch(worktreePath: string): Promise<number> {
+  try {
+    const output = await execGit(worktreePath, [
+      "log",
+      "-1",
+      "--format=%ct",
+    ]);
+    return parseInt(output.trim(), 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function showFile(
   worktreePath: string,
   ref: string

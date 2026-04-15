@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { listWorktrees } from "./GitOperations";
+import { listWorktrees, getLastCommitEpoch } from "./GitOperations";
 import type { WorktreeInfo } from "./types";
+
+const STALE_DAYS = 5;
 
 export class WorktreeDiscovery implements vscode.Disposable {
   private watchers: vscode.Disposable[] = [];
@@ -20,16 +22,28 @@ export class WorktreeDiscovery implements vscode.Disposable {
     const promises = folders.map(async (folder) => {
       try {
         const raw = await listWorktrees(folder.uri.fsPath);
-        if (raw.length > 0) {
-          result.set(
-            folder.uri.toString(),
-            raw.map((entry) => ({
+        if (raw.length === 0) return;
+
+        const cutoff = Math.floor(Date.now() / 1000) - STALE_DAYS * 86400;
+
+        const withDates = await Promise.all(
+          raw.map(async (entry) => ({
+            info: {
               path: entry.path,
               workspaceFolder: folder,
               branch: entry.branch,
               head: entry.head,
-            }))
-          );
+            },
+            epoch: await getLastCommitEpoch(entry.path),
+          }))
+        );
+
+        const recent = withDates
+          .filter((w) => w.epoch >= cutoff)
+          .map((w) => w.info);
+
+        if (recent.length > 0) {
+          result.set(folder.uri.toString(), recent);
         }
       } catch {
         // Not a git repo or git not available — skip
